@@ -6,7 +6,7 @@ const player = new Player(0);
 const goButton = document.getElementById("btnGo");
 let movementInterval = null;
 
-function resetGame() {
+function initGame() {
 
     gameContainer.innerHTML = '';
 
@@ -19,26 +19,56 @@ function resetGame() {
     updatePlayerPosition();
 }
 
-resetGame();
+function resetGame() {
+
+    gameContainer.innerHTML = '';
+
+    for (let i = 0; i < totalFloors; i++) {
+
+        const shouldCreateEnemy = Math.random() < 0.2;
+        let floor = null;
+
+        if (shouldCreateEnemy)
+            floor = createEnemy();
+        else
+            floor = createFloor();
+
+        gameContainer.appendChild(floor);
+
+    }
+    updatePlayerPosition();
+}
+
+initGame();
+
+function createEnemy() {
+    const enemy = document.createElement('span');
+    enemy.className = 'enemy';
+    enemy.textContent = 'SLM';
+    return enemy;
+}
 
 function createFloor() {
-
     const floor = document.createElement('span');
     floor.className = 'floor';
     floor.textContent = '___';
-
     return floor;
 }
 
 function updatePlayerPosition() {
 
     Array.from(gameContainer.children).forEach((child, index) => {
+
         if (index === player.position) {
+            if (child.classList.contains('enemy')) {
+                child.className = 'floor';
+                child.textContent = '___';
+            }
             child.textContent = '\\o/';
             child.className = 'player';
-        } else {
-            child.textContent = '___';
+        } else if (child.classList.contains('player')) {
             child.className = 'floor';
+            child.textContent = '___';
         }
     });
 
@@ -56,10 +86,10 @@ function movePlayer() {
         updatePlayerPosition();
     } else {
         clearInterval(movementInterval);
-        
+
         goButton.disabled = false;
         goButton.innerHTML = "GO"
-        
+
         player.position = 0;
         updatePlayerPosition();
     }
