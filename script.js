@@ -3,8 +3,10 @@ import { Player } from './player.js';
 const gameContainer = document.getElementById('game-pgr');
 const totalFloors = 20;
 const player = new Player(0);
+const goButton = document.getElementById("btnGo");
+let movementInterval = null;
 
-function initializeGame() {
+function resetGame() {
 
     gameContainer.innerHTML = '';
 
@@ -14,9 +16,10 @@ function initializeGame() {
         gameContainer.appendChild(floor);
 
     }
-
     updatePlayerPosition();
 }
+
+resetGame();
 
 function createFloor() {
 
@@ -28,7 +31,7 @@ function createFloor() {
 }
 
 function updatePlayerPosition() {
-  
+
     Array.from(gameContainer.children).forEach((child, index) => {
         if (index === player.position) {
             child.textContent = '\\o/';
@@ -39,8 +42,9 @@ function updatePlayerPosition() {
         }
     });
 
+    //DEBUG
     const blockCount = document.getElementById('block-count');
-    blockCount.innerHTML = 'block count: ' +  gameContainer.children.length;
+    blockCount.innerHTML = 'block count: ' + gameContainer.children.length;
 
     const playerPos = document.getElementById('player-position');
     playerPos.innerHTML = 'player pos: ' + (player.position + 1);
@@ -52,8 +56,19 @@ function movePlayer() {
         updatePlayerPosition();
     } else {
         clearInterval(movementInterval);
+        
+        goButton.disabled = false;
+        goButton.innerHTML = "GO"
+        
+        player.position = 0;
+        updatePlayerPosition();
     }
 }
 
-initializeGame();
-const movementInterval = setInterval(movePlayer, 1000);
+goButton.onclick = function () {
+    resetGame();
+    movementInterval = setInterval(movePlayer, 300);
+    goButton.disabled = true;
+    goButton.innerHTML = "WAIT"
+}
+
